@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
-  const API_BASE_URL = "http://localhost:8000";
+  const API_BASE_URL = "https://furry-cacciatore-daleyza.ngrok-free.dev";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +25,7 @@ export default function LoginPage() {
         // 1. 로그인 API 호출
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "69420" },
           body: JSON.stringify({ email, password }),
         });
 
@@ -48,8 +49,9 @@ export default function LoginPage() {
         // 2. 회원가입 API 호출
         const response = await fetch(`${API_BASE_URL}/users/`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "69420" },
+          
+          body: JSON.stringify({ name, email, password }),
         });
 
         if (!response.ok) {
@@ -86,6 +88,21 @@ export default function LoginPage() {
         <div className="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-slate-200">
           
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* 회원가입일때 이름 */}
+            {!isLoginMode && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-slate-700">이름</label>
+                <div className="mt-1">
+                  <input 
+                    id="name" type="text" required={!isLoginMode}
+                    value={name} onChange={(e) => setName(e.target.value)}
+                    className="appearance-none block w-full px-3 py-3 border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                    placeholder="홍길동" 
+                  />
+                </div>
+              </div>
+            )}
+            
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700">이메일 주소</label>
               <div className="mt-1">
@@ -93,6 +110,7 @@ export default function LoginPage() {
                   id="email" type="email" required 
                   value={email} onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-3 border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                  placeholder="example@email.com"
                 />
               </div>
             </div>
@@ -104,6 +122,7 @@ export default function LoginPage() {
                   id="password" type="password" required 
                   value={password} onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-3 border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"                  
+                  placeholder="8자 이상 입력해주세요"
                 />
               </div>
             </div>
