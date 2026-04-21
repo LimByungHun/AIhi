@@ -13,7 +13,9 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
 
+  //const API_BASE_URL = "https://localhost:8000";
   const API_BASE_URL = "https://furry-cacciatore-daleyza.ngrok-free.dev";
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,13 +23,13 @@ export default function LoginPage() {
     setErrorMsg("");
 
     try {
-      if (isLoginMode) {
+      if (isLoginMode) {        
         // 1. 로그인 API 호출
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "69420" },
           body: JSON.stringify({ email, password }),
-        });
+        });        
 
         if (!response.ok) {
           if (response.status === 401) throw new Error("이메일이나 비밀번호가 틀렸습니다.");
@@ -37,10 +39,9 @@ export default function LoginPage() {
         const data = await response.json();
         
         // 받은 access_token을 브라우저(LocalStorage)에 저장
-        localStorage.setItem("access_token", data.access_token);
-        
-        // 임시로 user_id를 1로 세팅 (백엔드 명세 기준)
-        localStorage.setItem("user_id", "1"); 
+        localStorage.setItem("access_token", data.access_token);        
+        localStorage.setItem("user_id", data.user_id);
+        localStorage.setItem("user_email", data.email);        
 
         alert("로그인 성공! 대시보드로 이동합니다.");
         router.push("/");
@@ -51,12 +52,17 @@ export default function LoginPage() {
           method: "POST",
           headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "69420" },
           
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ name,email, password }),
         });
 
         if (!response.ok) {
           if (response.status === 400) throw new Error("이미 등록된 이메일입니다.");
-          throw new Error("회원가입 처리 중 오류가 발생했습니다.");
+          throw new Error("회원가입 처리 중 오류가 발생했습니다.");          
+        }
+
+        const data = await response.json();
+        if (data.user_id) {
+          localStorage.setItem("user_id", String(data.user_id));
         }
 
         alert("회원가입이 완료되었습니다! 이제 로그인해주세요.");
